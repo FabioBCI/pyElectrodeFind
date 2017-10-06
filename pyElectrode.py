@@ -8,6 +8,7 @@ import pandas as pd
 import os
 import sys
 
+
 def main_menu():
 	os.system("clear")
 
@@ -15,7 +16,7 @@ def main_menu():
 	print('*        WELCOME pyELECTRODE             *')
 	print('*              v.1.0                     *')
 	print('*                                        *')
-	print('*          Licence: GNU. v3              *')
+	print('*          License: GNU. v3              *')
 	print('*                                        *')
 	print('*                                        *')
 	print('*  1- Find electrode with name           *')
@@ -38,10 +39,11 @@ def main_menu():
 		else:
 			return option
 
-def find_electrode_name_menu():
+def find_electrode_name_menu(csv_electrode_file):
 	name_electrode=raw_input("Name of electrode:")
 
 def main():
+
 	option=main_menu()
 
 
