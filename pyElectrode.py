@@ -7,9 +7,10 @@
 #TODO: option for print a list of electrodes
 
 import pandas as pd
+import numpy as np
 import os
 import sys
-import argparse
+from argparse import ArgumentParser
 
 def main_menu(electrodes,mode):
 	os.system("clear")
@@ -49,20 +50,19 @@ def main_menu(electrodes,mode):
 			return func(electrodes,mode)
 
 def list_electrodes(electrodes,mode):
-	electrodes_data=pd.read_csv(electrodes,header=0)
-	print(electrodes_data)
+	print(electrodes)
 	raw_input("[*]- Press intro to continue ...")
-	if(mode=="menu"):
+	if(mode==1):
 		main_menu(electrodes,mode)
 	else:
 		message_exit()
 		sys.exit(1)
 
 def list_names_electrodes(electrodes,mode):
-	electrodes_data=pd.read_csv(electrodes,header=0)
+
 	print(electrodes_data["electrode"])
 	raw_input("[*]- Press intro to continue ...")
-	if(mode=="menu"):
+	if(mode==1):
 		main_menu(electrodes,mode)
 	else:
 		message_exit()
@@ -70,9 +70,22 @@ def list_names_electrodes(electrodes,mode):
 
 def find_electrode_name_menu(electrodes,mode):
 	name_electrode=raw_input("Name of electrode:")
-	if(mode=="menu"):
+	if(mode==1):
+		dades=(electrodes.loc[electrodes['electrode']==name_electrode])
+		if(np.shape(dades)[0]==0):
+			print("No found the name of electrode")
+		else:
+			print(dades)
+
+		raw_input("[*]- Press intro to continue ...")
 		main_menu(electrodes,mode)
 	else:
+		for i in electrodes_data:
+			if(electrodes_data[i]["electrode"]==name_electrode):
+				print(electrodes_data[i])
+				pass
+			else:
+				pass
 		message_exit()
 		sys.exit(1)
 
@@ -89,25 +102,34 @@ def message_exit():
 	print("Thanks !!!")
 	print("")
 
-def main_shell():
-	file_csv=sys.argv[1]	
-
-	if(len(sys.argv) >= 3):
-		parametro=sys.argv[2]
-		mode="command"
-		switcher={
-			"-l": list_electrodes(file_csv,mode),
-			"-fn": find_electrode_name_menu(),
-		}
-		switcher.get(parametro,"nothing")
+def main_shell(options):
+	electrodes_data=pd.read_csv(options.electrodes,header=0)
+	if(options.mode==0):
+		#Mode command line
+		if(options.l=='1'):
+			list_electrodes(electrodes_data,options.mode)
+		else:
+			if(options.l=='2'):
+				list_names_electrodes(electrodes_data,options.mode)
+			else:
+				pass
 	else:
-		mode="menu"
-		main_menu(file_csv,mode)
+		#Mode menu		
+		main_menu(electrodes_data,options.mode)
 		
 
 
 def main():
-	main_shell()	
+	argp=ArgumentParser(version='1.0',description='Program for work with electrode EEG positons.',epilog='Copyright 2017 Autor under license GPL v3.0')
+
+	
+	argp.add_argument('-file',help='file that contains the electrode data in .csv',dest='electrodes',required='True')
+	argp.add_argument('-m',help='command line mode or menu mode, menu mode=0 commandline mode=1',dest='mode',action='store',required='True',type=int)
+	argp.add_argument('-l',help='list all electrodes by name or by name and position')
+	argp.add_argument('-f',help='find one electrode')
+	opts = argp.parse_args()
+
+	main_shell(opts)	
 
 
 if __name__=='__main__':
